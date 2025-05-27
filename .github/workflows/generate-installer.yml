@@ -19,7 +19,7 @@ jobs:
           # - macos-latest # doesn't run for free
           - windows-latest
         version:
-          - '3.10'
+          - '3.12'
     steps:
       - uses: actions/checkout@v4
         with:
@@ -31,4 +31,4 @@ jobs:
           spec: 'code/main.py'
           requirements: 'code/requirements.txt'
           upload_exe_with_name: 'NonPlanarSlicingDeformation-py${{ matrix.version }}-${{ matrix.os }}'
-          options: --onefile, --name "Non Planar Desformation", --windowed, 
+          options: --onefile, --name "NonPlanarSlicingDeformation", --windowed, 
