@@ -45,5 +45,5 @@ jobs:
     - name: Check types with MyPy
       if: always() && !contains(matrix.python-version, '3.8') # https://github.com/python/mypy/issues/16884
       run: |
-        mypy --install-types --non-interactive --disallow-untyped-defs --follow-imports normal non_planar_desformation tests
+        mypy --disallow-untyped-defs --follow-imports normal non_planar_desformation tests
        
