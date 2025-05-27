@@ -1,4 +1,4 @@
-from typing import Final
+from typing_extensions import Final
 
 width: Final[int] = 1600
 height: Final[int] = 800

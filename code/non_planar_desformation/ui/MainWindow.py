@@ -1,5 +1,5 @@
 import os
-from typing import List, Optional
+from typing_extensions import List, Optional
 
 from PySide6.QtCore import Slot, Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QFileDialog, QPushButton, QHBoxLayout, QSlider, QLabel

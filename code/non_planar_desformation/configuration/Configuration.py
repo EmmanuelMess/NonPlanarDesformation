@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Callable
+from typing_extensions import Callable
 
 from non_planar_desformation.deformer.Deformer import Deformer
 

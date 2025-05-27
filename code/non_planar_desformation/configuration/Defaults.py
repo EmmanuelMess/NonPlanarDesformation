@@ -1,4 +1,4 @@
-from typing import Final
+from typing_extensions import Final
 
 from non_planar_desformation.configuration.KeyValueParameters import KeyValueParameters
 
