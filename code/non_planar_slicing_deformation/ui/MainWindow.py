@@ -1,11 +1,11 @@
 import os
-from typing_extensions import List, Optional
+from typing_extensions import List, Optional, cast
 
 from PySide6.QtCore import Slot, Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QFileDialog, QPushButton, QHBoxLayout, QSlider, QLabel
 
 import pyvista as pv
-import pyvistaqt as pvqt
+import pyvistaqt as pvqt # type: ignore
 
 from non_planar_slicing_deformation.common import Constants
 from non_planar_slicing_deformation.common.MainLogger import MAIN_LOGGER
@@ -16,7 +16,7 @@ from non_planar_slicing_deformation.ui import Strings
 
 class MainWindow(QWidget):
 
-    def __init__(self, configuration: Configuration):
+    def __init__(self, configuration: Configuration) -> None:
         super().__init__()
 
         # State
@@ -97,11 +97,12 @@ class MainWindow(QWidget):
 
         if not isinstance(loadedMesh, pv.DataSet):
             MAIN_LOGGER.warn("Model is not a pv.DataSet!")
+            return
 
         self.plotterLeft.clear_actors()
         self.plotterLeft.add_mesh(loadedMesh)
 
-        self.deformer.setMesh(loadedMesh)
+        self.deformer.setMesh(cast(pv.DataSet, loadedMesh))
         self._updateDeformedMesh()
 
     @Slot()
@@ -116,7 +117,7 @@ class MainWindow(QWidget):
 
         self.deformer.save(path)
 
-    def _updateDeformedMesh(self):
+    def _updateDeformedMesh(self) -> None:
         self.deformer.deform()
         deformedMesh: Optional[pv.DataSet] = self.deformer.getDeformedMesh()
 

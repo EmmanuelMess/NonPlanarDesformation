@@ -1,4 +1,4 @@
-from typing_extensions import Optional, override
+from typing_extensions import Optional, override, cast
 
 import numpy as np
 import pyvista as pv
@@ -9,11 +9,11 @@ from non_planar_slicing_deformation.deformer.Deformer import Deformer
 
 
 class SimpleDeformer(Deformer):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(Defaults.simpleDeformerDefaults)
 
     @override
-    def deformImplementation(self) -> Optional[pv.DataObject]:
+    def deformImplementation(self) -> Optional[pv.DataSet]:
         mesh = self.getMesh()
 
         if mesh is None:
@@ -24,14 +24,14 @@ class SimpleDeformer(Deformer):
         mesh.field_data["faces"] = mesh.faces.reshape(-1, 4)[:, 1:]  # assume all triangles
 
         # scale mesh
-        mesh.points *= 1
+        mesh.points = cast(pv.pyvista_ndarray, mesh.points * 1)
 
         # center around the middle of the bounding box
         xmin, xmax, ymin, ymax, zmin, zmax = mesh.bounds
-        mesh.points -= np.array([(xmin + xmax) / 2, (ymin + ymax) / 2, zmin])
+        mesh.points = cast(pv.pyvista_ndarray, mesh.points - np.array([(xmin + xmax) / 2, (ymin + ymax) / 2, zmin]))
         # mesh.points -= np.array([0, 0, 0]) # optionally offset the part from the center
 
-        mesh.points = mesh.points[:10]
+        mesh.points = cast(pv.pyvista_ndarray, mesh.points[:10])
 
         # max radius of part
         max_radius = np.max(np.linalg.norm(mesh.points[:, :2], axis=1))
@@ -47,11 +47,11 @@ class SimpleDeformer(Deformer):
         translate_upwards = np.hstack([np.zeros((len(mesh.points), 2)), np.tan(
             ROTATION(distances_to_center).reshape(-1, 1)) * distances_to_center.reshape(-1, 1)])
 
-        mesh.points = mesh.points + translate_upwards
+        mesh.points = cast(pv.pyvista_ndarray, mesh.points + translate_upwards)
 
         # make bottom of part z=0 and center in bound box. remember the offsets for later
         xmin, xmax, ymin, ymax, zmin, zmax = mesh.bounds
         offsets_applied = np.array([(xmin + xmax) / 2, (ymin + ymax) / 2, zmin])
-        mesh.points -= offsets_applied
+        mesh.points = cast(pv.pyvista_ndarray, mesh.points - offsets_applied)
 
         return mesh

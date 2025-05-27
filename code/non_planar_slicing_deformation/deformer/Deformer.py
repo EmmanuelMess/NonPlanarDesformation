@@ -9,15 +9,19 @@ from non_planar_slicing_deformation.configuration.KeyValueParameters import KeyV
 
 
 class Deformer(metaclass=ABCMeta):
-    def __init__(self, parameters: KeyValueParameters):
-        self.parameters = parameters
-        self.model: Optional[pv.DataObject] = None
-        self.deformedMesh: Optional[pv.DataObject] = None
+    """
+    Generic class representing a deformation of the mesh
+    """
 
-    def setMesh(self, model: pv.DataObject):
+    def __init__(self, parameters: KeyValueParameters) -> None:
+        self.parameters = parameters
+        self.model: Optional[pv.DataSet] = None
+        self.deformedMesh: Optional[pv.DataSet] = None
+
+    def setMesh(self, model: pv.DataSet) -> None:
         self.model = model
 
-    def getMesh(self) -> Optional[pv.DataObject]:
+    def getMesh(self) -> Optional[pv.DataSet]:
         return self.model
 
     def save(self, path: str) -> None:
@@ -38,7 +42,7 @@ class Deformer(metaclass=ABCMeta):
         self.deformedMesh = self.deformImplementation()
 
     @abstractmethod
-    def deformImplementation(self) -> Optional[pv.DataObject]:
+    def deformImplementation(self) -> Optional[pv.DataSet]:
         pass
 
     def getParameters(self) -> KeyValueParameters:
