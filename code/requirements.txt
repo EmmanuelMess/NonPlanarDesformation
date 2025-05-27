@@ -1,0 +1,5 @@
+setuptools
+PySide6
+typing-extensions
+numpy
+pyvistaqt
