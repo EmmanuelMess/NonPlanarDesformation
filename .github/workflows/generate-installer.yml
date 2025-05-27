@@ -30,5 +30,5 @@ jobs:
           python_ver: ${{ matrix.version }}
           spec: 'code/main.py'
           requirements: 'code/requirements.txt'
-          upload_exe_with_name: 'NonPlanarDesformation-py${{ matrix.version }}-${{ matrix.os }}'
+          upload_exe_with_name: 'NonPlanarSlicingDeformation-py${{ matrix.version }}-${{ matrix.os }}'
           options: --onefile, --name "Non Planar Desformation", --windowed, 

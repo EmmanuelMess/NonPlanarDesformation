@@ -2,10 +2,10 @@ import sys
 
 from PySide6 import QtWidgets
 
-from non_planar_desformation.common import Constants
-from non_planar_desformation.common.Singleton import Singleton
-from non_planar_desformation.configuration.Configuration import Configuration
-from non_planar_desformation.ui.MainWindow import MainWindow
+from non_planar_slicing_deformation.common import Constants
+from non_planar_slicing_deformation.common.Singleton import Singleton
+from non_planar_slicing_deformation.configuration.Configuration import Configuration
+from non_planar_slicing_deformation.ui.MainWindow import MainWindow
 
 
 class MainApp(metaclass=Singleton):  # pylint: disable=too-few-public-methods

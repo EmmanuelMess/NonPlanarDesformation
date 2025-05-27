@@ -1,6 +1,6 @@
-from non_planar_desformation.configuration.Configuration import Configuration
-from non_planar_desformation.deformer.SimpleDeformer import SimpleDeformer
-from non_planar_desformation.ui.MainApp import MainApp
+from non_planar_slicing_deformation.configuration.Configuration import Configuration
+from non_planar_slicing_deformation.deformer.SimpleDeformer import SimpleDeformer
+from non_planar_slicing_deformation.ui.MainApp import MainApp
 
 
 def main() -> None:

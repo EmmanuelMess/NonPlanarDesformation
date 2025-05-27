@@ -3,9 +3,9 @@ from typing_extensions import Optional, override
 import numpy as np
 import pyvista as pv
 
-from non_planar_desformation.common.MainLogger import MAIN_LOGGER
-from non_planar_desformation.configuration import Defaults
-from non_planar_desformation.deformer.Deformer import Deformer
+from non_planar_slicing_deformation.common.MainLogger import MAIN_LOGGER
+from non_planar_slicing_deformation.configuration import Defaults
+from non_planar_slicing_deformation.deformer.Deformer import Deformer
 
 
 class SimpleDeformer(Deformer):

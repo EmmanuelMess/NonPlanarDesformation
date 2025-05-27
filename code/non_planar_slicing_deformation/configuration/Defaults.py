@@ -1,6 +1,6 @@
 from typing_extensions import Final
 
-from non_planar_desformation.configuration.KeyValueParameters import KeyValueParameters
+from non_planar_slicing_deformation.configuration.KeyValueParameters import KeyValueParameters
 
 simpleDeformerDefaults: Final[KeyValueParameters] = KeyValueParameters({
     "radius": 0.0

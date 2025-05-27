@@ -40,10 +40,10 @@ jobs:
     - name: Analysing the code with pylint
       if: always()
       run: |
-        pylint --fail-under=9 non_planar_desformation tests
+        pylint --fail-under=9 non_planar_slicing_deformation tests
         
     - name: Check types with MyPy
       if: always() && !contains(matrix.python-version, '3.8') # https://github.com/python/mypy/issues/16884
       run: |
-        mypy --disallow-untyped-defs --follow-imports normal non_planar_desformation tests
+        mypy --disallow-untyped-defs --follow-imports normal non_planar_slicing_deformation tests
        

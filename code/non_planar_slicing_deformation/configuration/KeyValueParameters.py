@@ -1,6 +1,6 @@
 from typing_extensions import Any, Set, Optional, Type, Dict
 
-from non_planar_desformation.common.MainLogger import MAIN_LOGGER
+from non_planar_slicing_deformation.common.MainLogger import MAIN_LOGGER
 
 
 class KeyValueParameters:
