@@ -60,7 +60,7 @@ class DeformerTab(QWidget):
         # TODO this is temporary, it needs to be replaced with a proper generic settings system
         # TODO disable settings when no model is loaded
         self.textRadius = QLabel()
-        self.textRadius.setText(Strings.radius)
+        self.textRadius.setText(Strings.deformationFactor)
         self.settingsLayout.addWidget(self.textRadius)
 
         self.radiusSlider = QSlider(Qt.Orientation.Horizontal)
