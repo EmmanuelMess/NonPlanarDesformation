@@ -6,5 +6,5 @@ setup(
     description="User friendly interface for non planar slicing",
     author="EmmanuelMess",
     packages=["non_planar_slicing_deformation"],
-    install_requires=["numpy", "pyvistaqt", "PySide6"],
+    install_requires=["numpy", "pyvistaqt", "PySide6", "pygcode"],
 )

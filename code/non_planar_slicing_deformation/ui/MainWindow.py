@@ -2,16 +2,16 @@ import os
 from typing_extensions import List, Optional, cast
 
 from PySide6.QtCore import Slot, Qt
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QFileDialog, QPushButton, QHBoxLayout, QSlider, QLabel
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QHBoxLayout
 
-import pyvista as pv
 import pyvistaqt as pvqt # type: ignore
 
-from non_planar_slicing_deformation.common import Constants
-from non_planar_slicing_deformation.common.MainLogger import MAIN_LOGGER
 from non_planar_slicing_deformation.configuration.Configuration import Configuration
 from non_planar_slicing_deformation.deformer.Deformer import Deformer
 from non_planar_slicing_deformation.ui import Strings
+from ui.DeformerTab import DeformerTab
+from ui.UndeformerTab import UndeformerTab
+from undeformer.Undeformer import Undeformer
 
 
 class MainWindow(QWidget):
@@ -21,108 +21,42 @@ class MainWindow(QWidget):
 
         # State
         self.deformer: Deformer = configuration.deformer()
-        #TODO self.undeform: Optional[Undeformer] = None
+        self.undeform: Undeformer = configuration.undeformer()
 
         # Layout
-        self.rootLayout = QHBoxLayout(self)
-        self.centralLayout = QVBoxLayout(self)
-        self.plottersLayout = QHBoxLayout(self)
-        self.buttonLayout = QHBoxLayout(self)
+        self.rootLayout = QVBoxLayout(self)
+
+        self.topButtonsLayout = QHBoxLayout(self)
+        self.topButtonsLayout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
         self.settingsLayout = QVBoxLayout(self)
         self.settingsLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
-        self.rootLayout.addLayout(self.centralLayout)
-        self.rootLayout.addLayout(self.settingsLayout)
+        self.deformerButton = QPushButton(Strings.deformer)
+        self.deformerButton.clicked.connect(self.onDeformerShow)
 
-        # TODO add controls tutorial
-        # TODO link both plotters's cameras
-        self.plotterLeft = pvqt.QtInteractor()
-        self.plottersLayout.addWidget(self.plotterLeft)
-        self.plotterRight = pvqt.QtInteractor()
-        self.plottersLayout.addWidget(self.plotterRight)
+        self.undeformerButton = QPushButton(Strings.undeformer)
+        self.undeformerButton.clicked.connect(self.onUndeformerShow)
 
-        self.centralLayout.addLayout(self.plottersLayout)
-        self.centralLayout.addLayout(self.buttonLayout)
+        self.topButtonsLayout.addWidget(self.deformerButton)
+        self.topButtonsLayout.addWidget(self.undeformerButton)
 
-        self.inputModelButton = QPushButton(Strings.selectInputFile)
-        self.inputModelButton.clicked.connect(self.onSelectInputFile)
-        self.buttonLayout.addWidget(self.inputModelButton)
+        self.deformerTab = DeformerTab(self, configuration)
+        self.deformerTab.setVisible(True)
 
-        self.outputModelButton = QPushButton(Strings.exportModel)
-        self.outputModelButton.clicked.connect(self.onSelectOutputFile)
-        self.buttonLayout.addWidget(self.outputModelButton)
+        self.undeformerTab = UndeformerTab(self, configuration)
+        self.undeformerTab.setVisible(False)
 
-        # TODO this is temporary, it needs to be replaced with a proper generic settings system
-        # TODO disable settings when no model is loaded
-        self.textRadius = QLabel()
-        self.textRadius.setText(Strings.radius)
-        self.settingsLayout.addWidget(self.textRadius)
-
-        self.radiusSlider = QSlider(Qt.Orientation.Horizontal)
-        self.radiusSlider.setTickPosition(QSlider.TickPosition.TicksBelow)
-        self.radiusSlider.setRange(-314, 314)
-        self.radiusSlider.setFixedWidth(Constants.widthSettings)
-        self.radiusSlider.valueChanged.connect(self.onRadiusChanged)
-        self.settingsLayout.addWidget(self.radiusSlider)
-
-        self.inputFileDialog = QFileDialog(self)
-        self.inputFileDialog.setFileMode(QFileDialog.FileMode.ExistingFile)
-        self.inputFileDialog.setWindowTitle(Strings.selectInputFile)
-        self.inputFileDialog.setMimeTypeFilters(["model/stl"])
-        self.inputFileDialog.fileSelected.connect(self.onSelectedInputFile)
-
-        self.outputFileDialog = QFileDialog(self)
-        self.outputFileDialog.setFileMode(QFileDialog.FileMode.AnyFile)
-        self.outputFileDialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
-        self.outputFileDialog.setWindowTitle(Strings.exportModel)
-        self.outputFileDialog.fileSelected.connect(self.onSelectedOutputFile)
+        self.rootLayout.addLayout(self.topButtonsLayout)
+        self.rootLayout.addWidget(self.deformerTab)
+        self.rootLayout.addWidget(self.undeformerTab)
 
     @Slot()
-    def onRadiusChanged(self, value: int) -> None:
-        self.deformer.getParameters()["radius"] = float(value) / 100
-        self._updateDeformedMesh()
+    def onDeformerShow(self):
+        self.deformerTab.setVisible(True)
+        self.undeformerTab.setVisible(False)
 
     @Slot()
-    def onSelectInputFile(self) -> None:
-        self.inputFileDialog.open()
-
-    @Slot()
-    def onSelectedInputFile(self, path: str) -> None:
-        if len(path) == 0:
-            MAIN_LOGGER.error("No models selected!")
-            return
-
-        loadedMesh: pv.DataObject = pv.read(path)
-
-        if not isinstance(loadedMesh, pv.DataSet):
-            MAIN_LOGGER.warn("Model is not a pv.DataSet!")
-            return
-
-        self.plotterLeft.clear_actors()
-        self.plotterLeft.add_mesh(loadedMesh)
-
-        self.deformer.setMesh(cast(pv.DataSet, loadedMesh))
-        self._updateDeformedMesh()
-
-    @Slot()
-    def onSelectOutputFile(self) -> None:
-        self.outputFileDialog.open()
-
-    @Slot()
-    def onSelectedOutputFile(self, path: str) -> None:
-        if len(path) == 0:
-            MAIN_LOGGER.error("No path chosen!")
-            return
-
-        self.deformer.save(path)
-
-    def _updateDeformedMesh(self) -> None:
-        self.deformer.deform()
-        deformedMesh: Optional[pv.DataSet] = self.deformer.getDeformedMesh()
-
-        if deformedMesh is not None:
-            self.plotterRight.clear_actors()
-            self.plotterRight.add_mesh(deformedMesh)
-        else:
-            MAIN_LOGGER.error("Deformed mesh cannot be shown!")
+    def onUndeformerShow(self):
+        self.deformerTab.setVisible(False)
+        self.undeformerTab.setVisible(True)

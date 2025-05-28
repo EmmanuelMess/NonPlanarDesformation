@@ -3,3 +3,4 @@ PySide6
 typing-extensions
 numpy
 pyvistaqt
+pygcode

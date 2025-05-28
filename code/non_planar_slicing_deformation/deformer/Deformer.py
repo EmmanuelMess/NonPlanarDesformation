@@ -6,6 +6,7 @@ import pyvista as pv
 
 from non_planar_slicing_deformation.common.MainLogger import MAIN_LOGGER
 from non_planar_slicing_deformation.configuration.KeyValueParameters import KeyValueParameters
+from state.DeformerState import DeformerState
 
 
 class Deformer(metaclass=ABCMeta):
@@ -15,18 +16,15 @@ class Deformer(metaclass=ABCMeta):
 
     def __init__(self, parameters: KeyValueParameters) -> None:
         self.parameters = parameters
-        self.model: Optional[pv.DataSet] = None
+        self.mesh: Optional[pv.DataSet] = None
         self.deformedMesh: Optional[pv.DataSet] = None
 
     def setMesh(self, model: pv.DataSet) -> None:
-        self.model = model
-
-    def getMesh(self) -> Optional[pv.DataSet]:
-        return self.model
+        self.mesh = model
 
     def save(self, path: str) -> None:
         if self.deformedMesh is None:
-            MAIN_LOGGER.error(f"No mesh to save!")
+            MAIN_LOGGER.error(f"No mesh to save, did you forget to call deform?")
             return
 
         if not os.path.splitext(path)[1] == ".stl":
@@ -39,11 +37,16 @@ class Deformer(metaclass=ABCMeta):
         return self.deformedMesh
 
     def deform(self) -> None:
-        self.deformedMesh = self.deformImplementation()
+        if self.mesh is None:
+            MAIN_LOGGER.error("Mesh is not set, did you forget to call setMesh?")
+            return None
+
+        self.deformedMesh = self.deformImplementation(self.mesh)
 
     @abstractmethod
-    def deformImplementation(self) -> Optional[pv.DataSet]:
+    def deformImplementation(self, mesh: pv.DataSet) -> Optional[pv.DataSet]:
         pass
 
     def getParameters(self) -> KeyValueParameters:
+        # TODO move to a superclass
         return self.parameters
