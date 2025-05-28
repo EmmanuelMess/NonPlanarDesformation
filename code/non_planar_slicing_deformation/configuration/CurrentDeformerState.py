@@ -1,7 +1,7 @@
 from typing_extensions import Optional, Type
 
-from common.Singleton import Singleton
-from state.DeformerState import DeformerState
+from non_planar_slicing_deformation.common.Singleton import Singleton
+from non_planar_slicing_deformation.state.DeformerState import DeformerState
 
 
 class CurrentDeformerState(metaclass=Singleton):

@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from typing_extensions import Callable, Type
 
 from non_planar_slicing_deformation.deformer.Deformer import Deformer
-from state.DeformerState import DeformerState
-from undeformer.Undeformer import Undeformer
+from non_planar_slicing_deformation.state.DeformerState import DeformerState
+from non_planar_slicing_deformation.undeformer.Undeformer import Undeformer
 
 
 @dataclass

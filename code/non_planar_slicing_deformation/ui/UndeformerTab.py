@@ -5,10 +5,10 @@ from typing_extensions import Optional, List
 import pyvista as pv
 import pyvistaqt as pvqt # type: ignore
 
-from common.MainLogger import MAIN_LOGGER
-from configuration.Configuration import Configuration
-from ui import Strings, GcodePlotHelper
-from undeformer.Undeformer import Undeformer
+from non_planar_slicing_deformation.common.MainLogger import MAIN_LOGGER
+from non_planar_slicing_deformation.configuration.Configuration import Configuration
+from non_planar_slicing_deformation.ui import Strings, GcodePlotHelper
+from non_planar_slicing_deformation.undeformer.Undeformer import Undeformer
 
 
 class UndeformerTab(QWidget):

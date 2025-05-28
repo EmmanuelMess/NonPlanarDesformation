@@ -3,7 +3,7 @@ from dataclasses import dataclass
 import numpy as np
 from typing_extensions import Callable
 
-from state.DeformerState import DeformerState
+from non_planar_slicing_deformation.state.DeformerState import DeformerState
 
 
 @dataclass

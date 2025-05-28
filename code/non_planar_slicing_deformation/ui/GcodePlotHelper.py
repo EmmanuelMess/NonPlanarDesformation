@@ -5,8 +5,6 @@ import pygcode as pg
 import pyvista as pv
 from typing_extensions import Optional, List, Tuple
 
-from common.MainLogger import MAIN_LOGGER
-
 G_COMMAND_3_AXIS_GCODE_REGEX = re.compile(r"(?:G1|G0)\s?(?:F[\-\d.]+)?\s?X(?P<x_coord>[\-\d.]+)\s?Y(?P<y_coord>[\-\d.]+)\s?(Z(?P<z_coord>[\-\d.]+))?\s?(?:E[\-\d.]+)?")
 
 def plottable3AxisGcode(lines: List[str]) -> Optional[pv.PolyData]:

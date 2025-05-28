@@ -1,4 +1,3 @@
-import os
 from typing_extensions import List, Optional, cast
 
 from PySide6.QtCore import Slot, Qt

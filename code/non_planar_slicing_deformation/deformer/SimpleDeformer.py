@@ -3,11 +3,10 @@ from typing_extensions import Optional, override, cast
 import numpy as np
 import pyvista as pv
 
-from configuration.CurrentDeformerState import CurrentDeformerState
-from non_planar_slicing_deformation.common.MainLogger import MAIN_LOGGER
+from non_planar_slicing_deformation.configuration.CurrentDeformerState import CurrentDeformerState
 from non_planar_slicing_deformation.configuration import Defaults
 from non_planar_slicing_deformation.deformer.Deformer import Deformer
-from state.SimpleDeformerState import SimpleDeformerState
+from non_planar_slicing_deformation.state.SimpleDeformerState import SimpleDeformerState
 
 
 class SimpleDeformer(Deformer):

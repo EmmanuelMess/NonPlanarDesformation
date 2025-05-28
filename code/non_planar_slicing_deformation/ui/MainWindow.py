@@ -9,9 +9,9 @@ import pyvistaqt as pvqt # type: ignore
 from non_planar_slicing_deformation.configuration.Configuration import Configuration
 from non_planar_slicing_deformation.deformer.Deformer import Deformer
 from non_planar_slicing_deformation.ui import Strings
-from ui.DeformerTab import DeformerTab
-from ui.UndeformerTab import UndeformerTab
-from undeformer.Undeformer import Undeformer
+from non_planar_slicing_deformation.ui.DeformerTab import DeformerTab
+from non_planar_slicing_deformation.ui.UndeformerTab import UndeformerTab
+from non_planar_slicing_deformation.undeformer.Undeformer import Undeformer
 
 
 class MainWindow(QWidget):

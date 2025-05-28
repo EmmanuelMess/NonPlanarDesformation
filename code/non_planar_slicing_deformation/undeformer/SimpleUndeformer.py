@@ -4,11 +4,11 @@ import numpy as np
 
 import pygcode as pg
 
-from common.MainLogger import MAIN_LOGGER
-from configuration import Defaults
-from configuration.CurrentDeformerState import CurrentDeformerState
-from state.SimpleDeformerState import SimpleDeformerState
-from undeformer.Undeformer import Undeformer
+from non_planar_slicing_deformation.common.MainLogger import MAIN_LOGGER
+from non_planar_slicing_deformation.configuration import Defaults
+from non_planar_slicing_deformation.configuration.CurrentDeformerState import CurrentDeformerState
+from non_planar_slicing_deformation.state.SimpleDeformerState import SimpleDeformerState
+from non_planar_slicing_deformation.undeformer.Undeformer import Undeformer
 
 
 class SimpleUndeformer(Undeformer):

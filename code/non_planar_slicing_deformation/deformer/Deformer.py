@@ -6,7 +6,6 @@ import pyvista as pv
 
 from non_planar_slicing_deformation.common.MainLogger import MAIN_LOGGER
 from non_planar_slicing_deformation.configuration.KeyValueParameters import KeyValueParameters
-from state.DeformerState import DeformerState
 
 
 class Deformer(metaclass=ABCMeta):

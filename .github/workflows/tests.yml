@@ -49,13 +49,7 @@ jobs:
       - name: Install deps
         run: |
           python -m pip install -r requirements.txt -r dev-requirements.txt
-      
-      - name: Install jax for linux for Python 3.8
-        if: contains(matrix.os, 'ubuntu') && matrix.version == '3.8'
-        run: |
-          python -m pip install "jax[cpu]"
 
-          
       - name: Test with pytest
         run: python -m pytest tests/ --doctest-modules --junitxml=junit/test-results-${{ matrix.version }}.xml
 
