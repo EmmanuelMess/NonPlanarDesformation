@@ -2,11 +2,7 @@ import argparse
 
 from non_planar_slicing_deformation.common.MainLogger import MAIN_LOGGER
 from non_planar_slicing_deformation.configuration.CurrentDeformerState import CurrentDeformerState
-from non_planar_slicing_deformation.configuration.Configuration import Configuration
-from non_planar_slicing_deformation.deformer.SimpleDeformer import SimpleDeformer
 from non_planar_slicing_deformation.ui.MainApp import MainApp
-from non_planar_slicing_deformation.state.DeformerState import DeformerState
-from non_planar_slicing_deformation.undeformer.SimpleUndeformer import SimpleUndeformer
 
 
 def main() -> None:
@@ -23,10 +19,7 @@ def main() -> None:
         MAIN_LOGGER.info("Executable runs")
         return
 
-    configuration = Configuration(deformer=lambda: SimpleDeformer(), undeformer=lambda: SimpleUndeformer(),
-                                  stateType=DeformerState)
-    CurrentDeformerState(configuration.stateType)
-    MainApp(configuration).run()
+    MainApp().run()
 
 
 if __name__ == '__main__':

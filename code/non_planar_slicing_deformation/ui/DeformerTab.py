@@ -16,11 +16,11 @@ class DeformerTab(QWidget):
     QWidget that draws the deformer view
     """
 
-    def __init__(self, parent: QWidget, configuration: Configuration) -> None:
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
 
         # State
-        self.deformer: Deformer = configuration.deformer()
+        self.deformer: Optional[Deformer] = None
 
         # Layout
         self.rootLayout = QHBoxLayout(self)
@@ -76,6 +76,9 @@ class DeformerTab(QWidget):
         self.outputFileDialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
         self.outputFileDialog.setWindowTitle(Strings.saveModel)
         self.outputFileDialog.fileSelected.connect(self.onSelectedOutputFile)
+
+    def setConfiguration(self, configuration: Configuration) -> None:
+        self.deformer = configuration.deformer()
 
     @Slot()
     def onRadiusChanged(self, value: int) -> None:

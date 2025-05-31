@@ -14,11 +14,10 @@ class UndeformerTab(QWidget):
     QWidget that draws the undeformer view
     """
 
-    def __init__(self, parent: QWidget, configuration: Configuration) -> None:
+    def __init__(self, parent: QWidget) -> None:
         super().__init__(parent)
 
-        # State
-        self.undeformer: Undeformer = configuration.undeformer()
+        self.undeformer: Optional[Undeformer] = None
 
         # Layout
         self.rootLayout = QHBoxLayout(self)
@@ -61,6 +60,9 @@ class UndeformerTab(QWidget):
         self.outputFileDialog.setAcceptMode(QFileDialog.AcceptMode.AcceptSave)
         self.outputFileDialog.setWindowTitle(Strings.saveModel)
         self.outputFileDialog.fileSelected.connect(self.onSelectedOutputFile)
+
+    def setConfiguration(self, configuration: Configuration) -> None:
+        self.undeformer = configuration.undeformer()
 
     @Slot()
     def onSelectInputFile(self) -> None:

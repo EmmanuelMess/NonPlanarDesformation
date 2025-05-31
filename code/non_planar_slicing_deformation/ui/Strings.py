@@ -1,4 +1,10 @@
 
+selectMode = "Seleccionar modo"
+fourAxisSimple = "4 ejes simple"
+fourS = "4S"
+threeAxis = "3 ejes (implementacion parcial)"
+accept = "Aceptar"
+
 openModel = "Abrir modelo"
 saveModel = "Guardar modelo"
 

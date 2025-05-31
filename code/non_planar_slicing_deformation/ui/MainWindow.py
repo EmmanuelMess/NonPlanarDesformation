@@ -1,6 +1,9 @@
 from PySide6.QtCore import Slot, Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QHBoxLayout
+from typing_extensions import Optional
 
+from configuration.CurrentDeformerState import CurrentDeformerState
+from non_planar_slicing_deformation.common import Constants
 from non_planar_slicing_deformation.configuration.Configuration import Configuration
 from non_planar_slicing_deformation.deformer.Deformer import Deformer
 from non_planar_slicing_deformation.ui import Strings
@@ -11,12 +14,12 @@ from non_planar_slicing_deformation.undeformer.Undeformer import Undeformer
 
 class MainWindow(QWidget):
 
-    def __init__(self, configuration: Configuration) -> None:
+    def __init__(self) -> None:
         super().__init__()
 
-        # State
-        self.deformer: Deformer = configuration.deformer()
-        self.undeform: Undeformer = configuration.undeformer()
+        self.resize(Constants.width, Constants.height)
+
+        self.configuration: Optional[Configuration] = None
 
         # Layout
         self.rootLayout = QVBoxLayout(self)
@@ -38,10 +41,10 @@ class MainWindow(QWidget):
         self.topButtonsLayout.addWidget(self.deformerButton)
         self.topButtonsLayout.addWidget(self.undeformerButton)
 
-        self.deformerTab = DeformerTab(self, configuration)
+        self.deformerTab = DeformerTab(self)
         self.deformerTab.setVisible(False)
 
-        self.undeformerTab = UndeformerTab(self, configuration)
+        self.undeformerTab = UndeformerTab(self)
         self.undeformerTab.setVisible(False)
 
         self.rootLayout.addLayout(self.topButtonsLayout)
@@ -49,6 +52,14 @@ class MainWindow(QWidget):
         self.rootLayout.addWidget(self.undeformerTab)
 
         self._showDeformerTab()
+
+    def setConfiguration(self, configuration: Configuration) -> None:
+        self.configuration = configuration
+
+        CurrentDeformerState(self.configuration.stateType)
+
+        self.deformerTab.setConfiguration(self.configuration)
+        self.undeformerTab.setConfiguration(self.configuration)
 
     @Slot()
     def onDeformerShow(self):
