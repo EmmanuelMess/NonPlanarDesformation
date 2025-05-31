@@ -5,7 +5,6 @@ from PySide6.QtCore import Slot
 from typing_extensions import Dict
 
 from deformer.SimpleDeformer import SimpleDeformer
-from non_planar_slicing_deformation.common import Constants
 from non_planar_slicing_deformation.common.Singleton import Singleton
 from non_planar_slicing_deformation.configuration.Configuration import Configuration
 from non_planar_slicing_deformation.ui.MainWindow import MainWindow

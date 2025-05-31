@@ -5,11 +5,9 @@ from typing_extensions import Optional
 from configuration.CurrentDeformerState import CurrentDeformerState
 from non_planar_slicing_deformation.common import Constants
 from non_planar_slicing_deformation.configuration.Configuration import Configuration
-from non_planar_slicing_deformation.deformer.Deformer import Deformer
 from non_planar_slicing_deformation.ui import Strings
 from non_planar_slicing_deformation.ui.DeformerTab import DeformerTab
 from non_planar_slicing_deformation.ui.UndeformerTab import UndeformerTab
-from non_planar_slicing_deformation.undeformer.Undeformer import Undeformer
 
 
 class MainWindow(QWidget):

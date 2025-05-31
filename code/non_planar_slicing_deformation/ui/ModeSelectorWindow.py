@@ -26,7 +26,6 @@ class ModeSelectorWindow(QWidget):
 
     accepted = Signal(Mode)
 
-
     def __init__(self) -> None:
         super().__init__()
 
