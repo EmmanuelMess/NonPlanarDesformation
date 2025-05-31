@@ -5,7 +5,17 @@ import pygcode as pg
 import pyvista as pv
 from typing_extensions import Optional, List, Tuple
 
-G_COMMAND_3_AXIS_GCODE_REGEX = re.compile(r"(?:G1|G0)\s?(?:F[\-\d.]+)?\s?X(?P<x_coord>[\-\d.]+)\s?Y(?P<y_coord>[\-\d.]+)\s?(Z(?P<z_coord>[\-\d.]+))?\s?(?:E[\-\d.]+)?")
+
+G_COMMAND_3_AXIS_GCODE_REGEX = re.compile(
+    r"(?:G1|G0)\s?(?:F[\-\d.]+)?\s?X(?P<x_coord>[\-\d.]+)\s?"
+    r"Y(?P<y_coord>[\-\d.]+)\s?(Z(?P<z_coord>[\-\d.]+))?\s?(?:E[\-\d.]+)?"
+)
+
+G_COMMAND_4_AXIS_GCODE_REGEX = re.compile(
+    r"(?:G01|G00)\s?C(?P<c_coord>[\-\d.]+)\s?X(?P<x_coord>[\-\d.]+)\s?Z(?P<z_coord>[\-\d.]+)\s?"
+    r"B(?P<b_coord>[\-\d.]+)\s?(?:E[\-\d.]+)?\s?(?:F[\-\d.]+)?"
+)
+
 
 def plottable3AxisGcode(lines: List[str]) -> Optional[pv.PolyData]:
     """
@@ -18,7 +28,7 @@ def plottable3AxisGcode(lines: List[str]) -> Optional[pv.PolyData]:
 
     x = np.float64(0)
     y = np.float64(0)
-    z = np.float64(20) # TODO check this
+    z = np.float64(20)  # TODO check this
 
     for gcodeLine in lines:
         line = pg.Line(gcodeLine)
@@ -27,7 +37,7 @@ def plottable3AxisGcode(lines: List[str]) -> Optional[pv.PolyData]:
 
         # extract position and feedrate
         for gcode in sorted(line.block.gcodes):
-            if gcode.word == "G01" or gcode.word == "G00":
+            if gcode.word in ["G01", "G00"]:
                 if gcode.X is not None:
                     x = gcode.X
                 if gcode.Y is not None:
@@ -43,8 +53,6 @@ def plottable3AxisGcode(lines: List[str]) -> Optional[pv.PolyData]:
     return pv.PolyData(pointArray)
 
 
-G_COMMAND_4_AXIS_GCODE_REGEX = re.compile(r"(?:G01|G00)\s?C(?P<c_coord>[\-\d.]+)\s?X(?P<x_coord>[\-\d.]+)\s?Z(?P<z_coord>[\-\d.]+)\s?B(?P<b_coord>[\-\d.]+)\s?(?:E[\-\d.]+)?\s?(?:F[\-\d.]+)?")
-
 def plottable4AxisGcode(lines: List[str]) -> Optional[pv.PolyData]:
     """
     Simple function to convert gcode lines to a pv.PolyData that can be plotted
@@ -57,7 +65,6 @@ def plottable4AxisGcode(lines: List[str]) -> Optional[pv.PolyData]:
     c = np.float64(0)
     x = np.float64(0)
     z = np.float64(0)
-    b = np.float64(0)
 
     for gcodeLine in lines:
         line = pg.Line(gcodeLine)
@@ -73,8 +80,6 @@ def plottable4AxisGcode(lines: List[str]) -> Optional[pv.PolyData]:
                     x = gcode.X
                 if gcode.Z is not None:
                     z = gcode.Z
-                if gcode.B is not None:
-                    b = gcode.B
 
                 cartesianX = np.cos(np.deg2rad(c)) * x
                 cartesianY = np.sin(np.deg2rad(c)) * x
@@ -85,5 +90,4 @@ def plottable4AxisGcode(lines: List[str]) -> Optional[pv.PolyData]:
 
     pointArray = np.array(points)
 
-    return pv.PolyData(pointArray[pointArray[:,2] > 0])
-
+    return pv.PolyData(pointArray[pointArray[:, 2] > 0])

@@ -7,8 +7,8 @@ from non_planar_slicing_deformation.state.DeformerState import DeformerState
 class CurrentDeformerState(metaclass=Singleton):
     # TODO check that the type is correct by passing a type to the constructor
 
-    def __init__(self, type: Type[DeformerState]=None):
-        self.state: Optional[type] = None
+    def __init__(self, stateType: Type[DeformerState] = None):
+        self.state: Optional[stateType] = None
 
     def setState(self, state: DeformerState) -> None:
         self.state = state

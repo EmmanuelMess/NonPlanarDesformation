@@ -1,10 +1,5 @@
-import os
-from typing_extensions import List, Optional, cast
-
 from PySide6.QtCore import Slot, Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QHBoxLayout
-
-import pyvistaqt as pvqt # type: ignore
 
 from non_planar_slicing_deformation.configuration.Configuration import Configuration
 from non_planar_slicing_deformation.deformer.Deformer import Deformer
@@ -76,5 +71,3 @@ class MainWindow(QWidget):
 
         self.deformerTab.setVisible(False)
         self.undeformerTab.setVisible(True)
-
-

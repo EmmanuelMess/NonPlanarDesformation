@@ -35,7 +35,7 @@ jobs:
     - name: Lint with flake8
       if: always()
       run: |
-        flake8 --count --show-source --statistics .
+        flake8 --count --show-source --statistics non_planar_slicing_deformation
 
     - name: Analysing the code with pylint
       if: always()

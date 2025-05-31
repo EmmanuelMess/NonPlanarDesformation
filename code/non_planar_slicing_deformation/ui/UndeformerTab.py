@@ -1,9 +1,7 @@
+import pyvistaqt as pvqt  # type: ignore
 from PySide6.QtCore import Qt, Slot
-from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QLabel, QSlider, QFileDialog
+from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QFileDialog
 from typing_extensions import Optional, List
-
-import pyvista as pv
-import pyvistaqt as pvqt # type: ignore
 
 from non_planar_slicing_deformation.common.MainLogger import MAIN_LOGGER
 from non_planar_slicing_deformation.configuration.Configuration import Configuration
@@ -21,7 +19,6 @@ class UndeformerTab(QWidget):
 
         # State
         self.undeformer: Undeformer = configuration.undeformer()
-        # TODO self.undeform: Optional[Undeformer] = None
 
         # Layout
         self.rootLayout = QHBoxLayout(self)
@@ -77,11 +74,11 @@ class UndeformerTab(QWidget):
 
         gcode: Optional[List[str]] = None
 
-        with open(path, "r") as gcodeFile:
-            gcode = [line for line in gcodeFile.readlines()]
+        with open(path, "rt", encoding="utf-8") as gcodeFile:
+            gcode = gcodeFile.readlines()
 
         if gcode is None:
-            MAIN_LOGGER.warn("Gcode did not load")
+            MAIN_LOGGER.warning("Gcode did not load")
             return
 
         self.plotterLeft.clear_actors()

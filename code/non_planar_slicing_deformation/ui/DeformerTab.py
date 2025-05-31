@@ -1,10 +1,8 @@
-from typing_extensions import List, Optional, cast
-
+import pyvista as pv
+import pyvistaqt as pvqt  # type: ignore
 from PySide6.QtCore import Slot, Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QFileDialog, QPushButton, QHBoxLayout, QSlider, QLabel
-
-import pyvista as pv
-import pyvistaqt as pvqt # type: ignore
+from typing_extensions import Optional, cast
 
 from non_planar_slicing_deformation.common import Constants
 from non_planar_slicing_deformation.common.MainLogger import MAIN_LOGGER
@@ -18,16 +16,14 @@ class DeformerTab(QWidget):
     QWidget that draws the deformer view
     """
 
-
     def __init__(self, parent: QWidget, configuration: Configuration) -> None:
         super().__init__(parent)
 
         # State
         self.deformer: Deformer = configuration.deformer()
-        #TODO self.undeform: Optional[Undeformer] = None
 
         # Layout
-        self.rootLayout =  QHBoxLayout(self)
+        self.rootLayout = QHBoxLayout(self)
         self.centralLayout = QVBoxLayout(self)
         self.plottersLayout = QHBoxLayout(self)
         self.buttonLayout = QHBoxLayout(self)
@@ -99,7 +95,7 @@ class DeformerTab(QWidget):
         loadedMesh: pv.DataObject = pv.read(path)
 
         if not isinstance(loadedMesh, pv.DataSet):
-            MAIN_LOGGER.warn("Model is not a pv.DataSet!")
+            MAIN_LOGGER.warning("Model is not a pv.DataSet!")
             return
 
         self.plotterLeft.clear_actors()

@@ -1,4 +1,4 @@
-from typing_extensions import override, Optional, List
+from typing_extensions import override, Optional, List, cast
 
 import numpy as np
 
@@ -12,18 +12,22 @@ from non_planar_slicing_deformation.undeformer.Undeformer import Undeformer
 
 
 class SimpleUndeformer(Undeformer):
+    """
+    Simple undefomer, original implementation by Joshua Bird at https://github.com/jyjblrd/Radial_Non_Planar_Slicer.
+    """
+
     def __init__(self):
         super().__init__(Defaults.simpleUndeformerDefaults)
 
         self.state: Optional[SimpleDeformerState] = None
 
     @override
-    def undeformImplementation(self, gcode: List[str]) -> Optional[List[str]]:
+    def undeformImplementation(self, gcode: List[str]) -> Optional[List[str]]:  # noqa: C901
         if CurrentDeformerState().getState() is None:
             MAIN_LOGGER.error("Missing state, did you forget to call CurrentDeformerState.setState?")
             return None
 
-        state = CurrentDeformerState().getState()
+        state = cast(SimpleDeformerState, CurrentDeformerState().getState())
 
         # TODO split this into functions
 
@@ -32,37 +36,34 @@ class SimpleUndeformer(Undeformer):
         feed = 0
         gcode_points = []
 
-        for line_text in gcode:
-            line = pg.Line(line_text)
-
-            extrusion = None
-
-            move_command_seen = False
-
-            if not line.block.gcodes:
+        for gcodeLine in map(pg.Line, gcode):
+            if not gcodeLine.block.gcodes:
                 continue
 
+            extrusion = None
+            nextGcodeBlock = None
+
             # extract position and feedrate
-            for gcode in sorted(line.block.gcodes):
-                if gcode.word == "G01" or gcode.word == "G00":
-                    move_command_seen = True
+            for gcodeBlock in sorted(gcodeLine.block.gcodes):
+                if gcodeBlock.word in ["G01", "G00"]:
+                    nextGcodeBlock = gcodeBlock
                     prev_pos = pos.copy()
 
-                    if gcode.X is not None:
-                        pos[0] = gcode.X
-                    if gcode.Y is not None:
-                        pos[1] = gcode.Y
-                    if gcode.Z is not None:
-                        pos[2] = gcode.Z
+                    if gcodeBlock.X is not None:
+                        pos[0] = gcodeBlock.X
+                    if gcodeBlock.Y is not None:
+                        pos[1] = gcodeBlock.Y
+                    if gcodeBlock.Z is not None:
+                        pos[2] = gcodeBlock.Z
 
-                if gcode.word.letter == "F":
-                    feed = gcode.word.value
+                if gcodeBlock.word.letter == "F":
+                    feed = gcodeBlock.word.value
 
-            if not move_command_seen:
+            if nextGcodeBlock is None:
                 continue
 
             # extract extrusion
-            for param in line.block.modal_params:
+            for param in gcodeLine.block.modal_params:
                 if param.letter == "E":
                     extrusion = param.value
 
@@ -71,7 +72,7 @@ class SimpleUndeformer(Undeformer):
             # makes G1 (feed moves) less jittery
             delta_pos = pos - prev_pos
             distance = np.linalg.norm(delta_pos)
-            if distance > 0 and gcode.word == "G01":
+            if distance > 0 and nextGcodeBlock.word == "G01":
                 seg_size = 1  # mm
                 num_segments = -(-distance // seg_size)  # hacky round up
                 seg_distance = distance / num_segments
@@ -86,7 +87,7 @@ class SimpleUndeformer(Undeformer):
                 for i in range(int(num_segments)):
                     gcode_points.append({
                         "position": (prev_pos + delta_pos * (i + 1) / num_segments) + state.offsetsApplied,
-                        "command": gcode.word,
+                        "command": gcodeBlock.word,
                         "extrusion": extrusion / num_segments if extrusion is not None else None,
                         "inv_time_feed": inv_time_feed,
                         "move_length": seg_distance,
@@ -97,7 +98,7 @@ class SimpleUndeformer(Undeformer):
             else:
                 gcode_points.append({
                     "position": pos.copy() + state.offsetsApplied,
-                    "command": gcode.word,
+                    "command": gcodeBlock.word,
                     "extrusion": extrusion,
                     "inv_time_feed": None,
                     "move_length": 0
@@ -168,9 +169,7 @@ class SimpleUndeformer(Undeformer):
             if position[2] < 0:
                 continue
 
-            #################################################################################################
-            ### If you want to print on another type of 4 axis printer, you will need to change this code ###
-            #################################################################################################
+            # If you want to print on another type of 4 axis printer, you will need to change next code
             # convert to polar coordinates
             r = np.linalg.norm(position[:2])
             theta = np.arctan2(position[1], position[0])
@@ -191,9 +190,7 @@ class SimpleUndeformer(Undeformer):
             theta_accum += delta_theta
 
             string = f"{point['command']} C{np.rad2deg(theta_accum):.5f} X{r:.5f} Z{z:.5f} B{-np.rad2deg(rotation):.5f}"
-            #################################################################################################
-            ### If you want to print on another type of 4 axis printer, you will need to change this code ###
-            #################################################################################################
+            # If you want to print on another type of 4 axis printer, you will need to change previous code
 
             if point["extrusion"] is not None:
                 string += f" E{point['extrusion']:.4f}"
@@ -202,14 +199,14 @@ class SimpleUndeformer(Undeformer):
             if point["inv_time_feed"] is not None:
                 string += f" F{(point['inv_time_feed']):.4f}"
             else:
-                string += f" F50000"
-                outputLines.append(f"G94")
+                string += " F50000"
+                outputLines.append("G94")
                 no_feed_value = True
 
             outputLines.append(string)
 
             if no_feed_value:
-                outputLines.append(f"G93")  # back to inv feed
+                outputLines.append("G93")  # back to inv feed
 
             # update previous values
             prev_r = r

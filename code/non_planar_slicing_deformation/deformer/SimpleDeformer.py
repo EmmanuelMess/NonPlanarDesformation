@@ -10,6 +10,10 @@ from non_planar_slicing_deformation.state.SimpleDeformerState import SimpleDefor
 
 
 class SimpleDeformer(Deformer):
+    """
+    Simple defomer, original implementation by Joshua Bird at https://github.com/jyjblrd/Radial_Non_Planar_Slicer.
+    """
+
     def __init__(self) -> None:
         super().__init__(Defaults.simpleDeformerDefaults)
 
@@ -22,7 +26,7 @@ class SimpleDeformer(Deformer):
         mesh.points = cast(pv.pyvista_ndarray, mesh.points * 1)
 
         # center around the middle of the bounding box
-        xmin, xmax, ymin, ymax, zmin, zmax = mesh.bounds
+        xmin, xmax, ymin, ymax, zmin, _ = mesh.bounds
         mesh.points = cast(pv.pyvista_ndarray, mesh.points - np.array([(xmin + xmax) / 2, (ymin + ymax) / 2, zmin]))
         # mesh.points -= np.array([0, 0, 0]) # optionally offset the part from the center
 
@@ -32,10 +36,11 @@ class SimpleDeformer(Deformer):
         max_radius = np.max(np.linalg.norm(mesh.points[:, :2], axis=1))
 
         # define rotation as a function of radius
-        rotation = lambda radius: self.getParameters()["radius", float] * (radius / max_radius)
-        # rotation = lambda radius: np.deg2rad(15 + 30 * (radius / max_radius))  # Use for propeller and tree
-        # rotation = lambda radius: np.full_like(radius, np.deg2rad(-40)) # Fixed rotation inwards
-        # rotation = lambda radius: np.deg2rad(-40 + 30 * (1 - (radius / max_radius)) ** 2) # Use for bridge
+        def rotation(radius: np.float64):
+            return self.getParameters()["radius", float] * (radius / max_radius)
+            # return np.deg2rad(15 + 30 * (radius / max_radius))  # Use for propeller and tree
+            # return np.full_like(radius, np.deg2rad(-40)) # Fixed rotation inwards
+            # return np.deg2rad(-40 + 30 * (1 - (radius / max_radius)) ** 2) # Use for bridge
 
         # rotate points around max diameter ring
         distances_to_center = np.linalg.norm(mesh.points[:, :2], axis=1)
@@ -45,7 +50,7 @@ class SimpleDeformer(Deformer):
         mesh.points = cast(pv.pyvista_ndarray, mesh.points + translate_upwards)
 
         # make bottom of part z=0 and center in bound box. remember the offsets for later
-        xmin, xmax, ymin, ymax, zmin, zmax = mesh.bounds
+        xmin, xmax, ymin, ymax, zmin, _ = mesh.bounds
         offsets_applied = np.array([(xmin + xmax) / 2, (ymin + ymax) / 2, zmin])
         mesh.points = cast(pv.pyvista_ndarray, mesh.points - offsets_applied)
 
