@@ -33,16 +33,18 @@ class MainWindow(QWidget):
         self.settingsLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
 
         self.deformerButton = QPushButton(Strings.deformer)
+        self.deformerButton.setCheckable(True)
         self.deformerButton.clicked.connect(self.onDeformerShow)
 
         self.undeformerButton = QPushButton(Strings.undeformer)
+        self.undeformerButton.setCheckable(True)
         self.undeformerButton.clicked.connect(self.onUndeformerShow)
 
         self.topButtonsLayout.addWidget(self.deformerButton)
         self.topButtonsLayout.addWidget(self.undeformerButton)
 
         self.deformerTab = DeformerTab(self, configuration)
-        self.deformerTab.setVisible(True)
+        self.deformerTab.setVisible(False)
 
         self.undeformerTab = UndeformerTab(self, configuration)
         self.undeformerTab.setVisible(False)
@@ -51,12 +53,28 @@ class MainWindow(QWidget):
         self.rootLayout.addWidget(self.deformerTab)
         self.rootLayout.addWidget(self.undeformerTab)
 
+        self._showDeformerTab()
+
     @Slot()
     def onDeformerShow(self):
-        self.deformerTab.setVisible(True)
-        self.undeformerTab.setVisible(False)
+        self._showDeformerTab()
 
     @Slot()
     def onUndeformerShow(self):
+        self._showUndeformerTab()
+
+    def _showDeformerTab(self) -> None:
+        self.deformerButton.setChecked(True)
+        self.undeformerButton.setChecked(False)
+
+        self.deformerTab.setVisible(True)
+        self.undeformerTab.setVisible(False)
+
+    def _showUndeformerTab(self) -> None:
+        self.deformerButton.setChecked(False)
+        self.undeformerButton.setChecked(True)
+
         self.deformerTab.setVisible(False)
         self.undeformerTab.setVisible(True)
+
+
