@@ -87,7 +87,7 @@ class SimpleUndeformer(Undeformer):
                 for i in range(int(num_segments)):
                     gcode_points.append({
                         "position": (prev_pos + delta_pos * (i + 1) / num_segments) + state.offsetsApplied,
-                        "command": gcodeBlock.word,
+                        "command": nextGcodeBlock.word,
                         "extrusion": extrusion / num_segments if extrusion is not None else None,
                         "inv_time_feed": inv_time_feed,
                         "move_length": seg_distance,
@@ -98,7 +98,7 @@ class SimpleUndeformer(Undeformer):
             else:
                 gcode_points.append({
                     "position": pos.copy() + state.offsetsApplied,
-                    "command": gcodeBlock.word,
+                    "command": nextGcodeBlock.word,
                     "extrusion": extrusion,
                     "inv_time_feed": None,
                     "move_length": 0

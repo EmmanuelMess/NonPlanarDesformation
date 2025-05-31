@@ -15,6 +15,10 @@ class ModeSelectorWindow(QWidget):
 
     @dataclass
     class Item:
+        """
+        Data models for the items in the dropdown
+        """
+
         mode: Mode
         text: str
 

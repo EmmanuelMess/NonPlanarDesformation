@@ -62,14 +62,17 @@ class UndeformerTab(QWidget):
         self.outputFileDialog.fileSelected.connect(self.onSelectedOutputFile)
 
     def setConfiguration(self, configuration: Configuration) -> None:
+        """
+        Set the actual underlying algorithm for the undeformer
+        """
         self.undeformer = configuration.undeformer()
 
     @Slot()
-    def onSelectInputFile(self) -> None:
+    def onSelectInputFile(self) -> None:  # pylint: disable=missing-function-docstring
         self.inputFileDialog.open()
 
     @Slot()
-    def onSelectedInputFile(self, path: str) -> None:
+    def onSelectedInputFile(self, path: str) -> None:  # pylint: disable=missing-function-docstring
         if len(path) == 0:
             MAIN_LOGGER.error("No models selected!")
             return
@@ -90,11 +93,11 @@ class UndeformerTab(QWidget):
         self._updateUndeformedMesh()
 
     @Slot()
-    def onSelectOutputFile(self) -> None:
+    def onSelectOutputFile(self) -> None:  # pylint: disable=missing-function-docstring
         self.outputFileDialog.open()
 
     @Slot()
-    def onSelectedOutputFile(self, path: str) -> None:
+    def onSelectedOutputFile(self, path: str) -> None:  # pylint: disable=missing-function-docstring
         if len(path) == 0:
             MAIN_LOGGER.error("No path chosen!")
             return

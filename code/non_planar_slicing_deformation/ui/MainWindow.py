@@ -60,11 +60,11 @@ class MainWindow(QWidget):
         self.undeformerTab.setConfiguration(self.configuration)
 
     @Slot()
-    def onDeformerShow(self):
+    def onDeformerShow(self):  # pylint: disable=missing-function-docstring
         self._showDeformerTab()
 
     @Slot()
-    def onUndeformerShow(self):
+    def onUndeformerShow(self):  # pylint: disable=missing-function-docstring
         self._showUndeformerTab()
 
     def _showDeformerTab(self) -> None:
