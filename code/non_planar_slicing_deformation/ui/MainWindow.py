@@ -2,14 +2,11 @@ from PySide6.QtCore import Slot, Qt
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QHBoxLayout
 from typing_extensions import Optional
 
-from configuration.CurrentDeformerState import CurrentDeformerState
 from non_planar_slicing_deformation.common import Constants
 from non_planar_slicing_deformation.configuration.Configuration import Configuration
-from non_planar_slicing_deformation.deformer.Deformer import Deformer
 from non_planar_slicing_deformation.ui import Strings
 from non_planar_slicing_deformation.ui.DeformerTab import DeformerTab
 from non_planar_slicing_deformation.ui.UndeformerTab import UndeformerTab
-from non_planar_slicing_deformation.undeformer.Undeformer import Undeformer
 
 
 class MainWindow(QWidget):
@@ -56,17 +53,15 @@ class MainWindow(QWidget):
     def setConfiguration(self, configuration: Configuration) -> None:
         self.configuration = configuration
 
-        CurrentDeformerState(self.configuration.stateType)
-
         self.deformerTab.setConfiguration(self.configuration)
         self.undeformerTab.setConfiguration(self.configuration)
 
     @Slot()
-    def onDeformerShow(self):
+    def onDeformerShow(self) -> None:  # pylint: disable=missing-function-docstring
         self._showDeformerTab()
 
     @Slot()
-    def onUndeformerShow(self):
+    def onUndeformerShow(self) -> None:  # pylint: disable=missing-function-docstring
         self._showUndeformerTab()
 
     def _showDeformerTab(self) -> None:

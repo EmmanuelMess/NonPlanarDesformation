@@ -36,7 +36,7 @@ class SimpleDeformer(Deformer):
         max_radius = np.max(np.linalg.norm(mesh.points[:, :2], axis=1))
 
         # define rotation as a function of radius
-        def rotation(radius: np.float64):
+        def rotation(radius: np.float64) -> np.float64:
             return self.getParameters()["radius", float] * (radius / max_radius)
             # return np.deg2rad(15 + 30 * (radius / max_radius))  # Use for propeller and tree
             # return np.full_like(radius, np.deg2rad(-40)) # Fixed rotation inwards

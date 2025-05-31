@@ -1,7 +1,6 @@
 import argparse
 
 from non_planar_slicing_deformation.common.MainLogger import MAIN_LOGGER
-from non_planar_slicing_deformation.configuration.CurrentDeformerState import CurrentDeformerState
 from non_planar_slicing_deformation.ui.MainApp import MainApp
 
 

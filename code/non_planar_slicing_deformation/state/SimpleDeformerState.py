@@ -12,4 +12,4 @@ class SimpleDeformerState(DeformerState):
     The state for :class:`SimpleDeformer` and :class:`SimpleUndeformer`
     """
     rotation: Callable[[np.float64], np.float64]
-    offsetsApplied: np.float64
+    offsetsApplied: np.ndarray

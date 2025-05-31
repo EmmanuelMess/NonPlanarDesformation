@@ -78,19 +78,30 @@ class DeformerTab(QWidget):
         self.outputFileDialog.fileSelected.connect(self.onSelectedOutputFile)
 
     def setConfiguration(self, configuration: Configuration) -> None:
+        """
+        Set the actual underlying algorithm for the deformer
+        """
         self.deformer = configuration.deformer()
 
     @Slot()
-    def onRadiusChanged(self, value: int) -> None:
+    def onRadiusChanged(self, value: int) -> None:  # pylint: disable=missing-function-docstring
+        if self.deformer is None:
+            MAIN_LOGGER.error("Deformer is None, did you forget to call setConfiguration?")
+            return
+
         self.deformer.getParameters()["radius"] = float(value) / 100
         self._updateDeformedMesh()
 
     @Slot()
-    def onSelectInputFile(self) -> None:
+    def onSelectInputFile(self) -> None:  # pylint: disable=missing-function-docstring
         self.inputFileDialog.open()
 
     @Slot()
-    def onSelectedInputFile(self, path: str) -> None:
+    def onSelectedInputFile(self, path: str) -> None:  # pylint: disable=missing-function-docstring
+        if self.deformer is None:
+            MAIN_LOGGER.error("Deformer is None, did you forget to call setConfiguration?")
+            return
+
         if len(path) == 0:
             MAIN_LOGGER.error("No models selected!")
             return
@@ -108,11 +119,15 @@ class DeformerTab(QWidget):
         self._updateDeformedMesh()
 
     @Slot()
-    def onSelectOutputFile(self) -> None:
+    def onSelectOutputFile(self) -> None:  # pylint: disable=missing-function-docstring
         self.outputFileDialog.open()
 
     @Slot()
-    def onSelectedOutputFile(self, path: str) -> None:
+    def onSelectedOutputFile(self, path: str) -> None:  # pylint: disable=missing-function-docstring
+        if self.deformer is None:
+            MAIN_LOGGER.error("Deformer is None, did you forget to call setConfiguration?")
+            return
+
         if len(path) == 0:
             MAIN_LOGGER.error("No path chosen!")
             return
@@ -120,6 +135,10 @@ class DeformerTab(QWidget):
         self.deformer.save(path)
 
     def _updateDeformedMesh(self) -> None:
+        if self.deformer is None:
+            MAIN_LOGGER.error("Deformer is None, did you forget to call setConfiguration?")
+            return
+
         self.deformer.deform()
         deformedMesh: Optional[pv.DataSet] = self.deformer.getDeformedMesh()
 

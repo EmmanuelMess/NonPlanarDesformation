@@ -61,9 +61,15 @@ class Undeformer(metaclass=ABCMeta):
                 file.write(f"{line}\n")
 
     @abstractmethod
-    def undeformImplementation(self, gcode: List[str]) -> Optional[str]:
-        pass
+    def undeformImplementation(self, gcode: List[str]) -> Optional[List[str]]:
+        """
+        Hidden implementation for :func:`~uneform` that subclasses must implement.
+        This must not be used outside :class:`Undeformer`.
+        """
 
     def getParameters(self) -> KeyValueParameters:
+        """
+        Get the :class:`KeyValueParameters` for this Undeformer
+        """
         # TODO move to a superclass
         return self.parameters

@@ -1,7 +1,7 @@
 import re
 
 import numpy as np
-import pygcode as pg
+import pygcode as pg  # type: ignore
 import pyvista as pv
 from typing_extensions import Optional, List, Tuple
 
@@ -73,7 +73,7 @@ def plottable4AxisGcode(lines: List[str]) -> Optional[pv.PolyData]:
 
         # extract position and feedrate
         for gcode in sorted(line.block.gcodes):
-            if gcode.word == "G01" or gcode.word == "G00":
+            if gcode.word in ["G01", "G00"]:
                 if gcode.C is not None:
                     c = gcode.C
                 if gcode.X is not None:

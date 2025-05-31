@@ -1,8 +1,8 @@
 from dataclasses import dataclass
-from typing_extensions import Callable, Type
+
+from typing_extensions import Callable
 
 from non_planar_slicing_deformation.deformer.Deformer import Deformer
-from non_planar_slicing_deformation.state.DeformerState import DeformerState
 from non_planar_slicing_deformation.undeformer.Undeformer import Undeformer
 
 
@@ -17,5 +17,3 @@ class Configuration:
     """
     Constructor for the Undeformer that will be used in the app
     """
-
-    stateType: Type[DeformerState]

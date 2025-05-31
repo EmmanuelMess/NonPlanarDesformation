@@ -4,8 +4,8 @@ from PySide6.QtCore import Qt, Signal, Slot
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QComboBox, QLabel, QPushButton
 from typing_extensions import List
 
-from ui import Strings
-from ui.Mode import Mode
+from non_planar_slicing_deformation.ui import Strings
+from non_planar_slicing_deformation.ui.Mode import Mode
 
 
 class ModeSelectorWindow(QWidget):
@@ -15,6 +15,10 @@ class ModeSelectorWindow(QWidget):
 
     @dataclass
     class Item:
+        """
+        Data models for the items in the dropdown
+        """
+
         mode: Mode
         text: str
 
@@ -25,7 +29,6 @@ class ModeSelectorWindow(QWidget):
     ]
 
     accepted = Signal(Mode)
-
 
     def __init__(self) -> None:
         super().__init__()

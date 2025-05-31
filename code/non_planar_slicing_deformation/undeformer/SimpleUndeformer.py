@@ -2,7 +2,7 @@ from typing_extensions import override, Optional, List, cast
 
 import numpy as np
 
-import pygcode as pg
+import pygcode as pg  # type: ignore
 
 from non_planar_slicing_deformation.common.MainLogger import MAIN_LOGGER
 from non_planar_slicing_deformation.configuration import Defaults
@@ -16,7 +16,7 @@ class SimpleUndeformer(Undeformer):
     Simple undefomer, original implementation by Joshua Bird at https://github.com/jyjblrd/Radial_Non_Planar_Slicer.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(Defaults.simpleUndeformerDefaults)
 
         self.state: Optional[SimpleDeformerState] = None
@@ -87,7 +87,7 @@ class SimpleUndeformer(Undeformer):
                 for i in range(int(num_segments)):
                     gcode_points.append({
                         "position": (prev_pos + delta_pos * (i + 1) / num_segments) + state.offsetsApplied,
-                        "command": gcodeBlock.word,
+                        "command": nextGcodeBlock.word,
                         "extrusion": extrusion / num_segments if extrusion is not None else None,
                         "inv_time_feed": inv_time_feed,
                         "move_length": seg_distance,
@@ -98,17 +98,19 @@ class SimpleUndeformer(Undeformer):
             else:
                 gcode_points.append({
                     "position": pos.copy() + state.offsetsApplied,
-                    "command": gcodeBlock.word,
+                    "command": nextGcodeBlock.word,
                     "extrusion": extrusion,
                     "inv_time_feed": None,
                     "move_length": 0
                 })
 
         # untransform gcode
-        positions = np.array([point["position"] for point in gcode_points])
+        positions = np.array([point["position"] for point in gcode_points], dtype=np.float64)
         distances_to_center = np.linalg.norm(positions[:, :2], axis=1)
-        translate_upwards = np.hstack([np.zeros((len(positions), 2)), np.tan(
-            state.rotation(distances_to_center).reshape(-1, 1)) * distances_to_center.reshape(-1, 1)])
+        translate_upwards = np.hstack([
+            np.zeros((len(positions), 2)),
+            np.tan(state.rotation(distances_to_center).reshape(-1, 1)) * distances_to_center.reshape(-1, 1)
+        ], dtype=np.float64)
 
         new_positions = positions - translate_upwards
 
@@ -116,10 +118,10 @@ class SimpleUndeformer(Undeformer):
         max_z = 0
         for i, point in enumerate(gcode_points):
             if point["command"] == "G01":
-                max_z = max(max_z, new_positions[i][2])
+                max_z = np.max(max_z, new_positions[i, 2])
         for i, point in enumerate(gcode_points):
             if point["command"] == "G00":
-                if new_positions[i][2] > max_z:
+                if new_positions[i, 2] > max_z:
                     new_positions[i] = None
 
         # rescale extrusion by change in move_length
@@ -137,11 +139,11 @@ class SimpleUndeformer(Undeformer):
             if point["extrusion"] is not None:
                 point["extrusion"] *= extrusion_scales[i]
 
-        NOZZLE_OFFSET = 43  # mm
+        NOZZLE_OFFSET = np.float64(43)  # mm
 
-        prev_r = 0
-        prev_theta = 0
-        prev_z = 20
+        prev_r = np.float64(0)
+        prev_theta = np.float64(0)
+        prev_z = np.float64(20)
 
         theta_accum = 0
 
@@ -154,11 +156,11 @@ class SimpleUndeformer(Undeformer):
         outputLines.append("G1 E10 ; prime extruder ")
         outputLines.append("G94 ; mm/min feed ")
         outputLines.append("G90 ; absolute positioning ")
-        outputLines.append(f"G0 C{prev_theta} X{prev_r} Z{prev_z} B{-np.rad2deg(state.rotation(0))}")
+        outputLines.append(f"G0 C{prev_theta} X{prev_r} Z{prev_z} B{-np.rad2deg(state.rotation(np.float64(0)))}")
         outputLines.append("G93 ; inverse time feed ")
 
         for i, point in enumerate(gcode_points):
-            position = new_positions[i]
+            position = new_positions[i, :]
 
             if position is None:
                 continue
@@ -171,7 +173,7 @@ class SimpleUndeformer(Undeformer):
 
             # If you want to print on another type of 4 axis printer, you will need to change next code
             # convert to polar coordinates
-            r = np.linalg.norm(position[:2])
+            r = np.float64(np.linalg.norm(position[:2]))  # mypy needs the cast for some reason
             theta = np.arctan2(position[1], position[0])
             z = position[2]
 
