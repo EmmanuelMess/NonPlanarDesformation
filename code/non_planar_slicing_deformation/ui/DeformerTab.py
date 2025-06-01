@@ -11,7 +11,7 @@ from non_planar_slicing_deformation.deformer.Deformer import Deformer
 from non_planar_slicing_deformation.ui import Strings
 
 
-class DeformerTab(QWidget):
+class DeformerTab(QWidget):  # pylint: disable=duplicate-code
     """
     QWidget that draws the deformer view
     """

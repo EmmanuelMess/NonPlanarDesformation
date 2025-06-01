@@ -8,6 +8,10 @@ from non_planar_slicing_deformation.undeformer.Undeformer import Undeformer
 
 @dataclass
 class Configuration:
+    """
+    Holds the deformer and undeformer classes, one should exist per element in :class:`Mode`
+    """
+
     deformer: Callable[[], Deformer]
     """
     Constructor for the Deformer that will be used in the app

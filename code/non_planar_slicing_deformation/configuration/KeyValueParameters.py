@@ -12,13 +12,13 @@ class KeyValueParameters:
         self.map = defaults
 
     def __getitem__(self, item: Tuple[str, Type[Any]]) -> Optional[Any]:
-        key, type = item
+        key, valueType = item
         if key not in self.map.keys():
             MAIN_LOGGER.warning(f"Key {key} is not in parameter map {self.map}")
             return None
 
-        if not isinstance(self.map[key], type):
-            MAIN_LOGGER.warning(f"Value for '{key}' is not of type '{type}'")
+        if not isinstance(self.map[key], valueType):
+            MAIN_LOGGER.warning(f"Value for '{key}' is not of type '{valueType}'")
             return None
 
         return self.map[key]

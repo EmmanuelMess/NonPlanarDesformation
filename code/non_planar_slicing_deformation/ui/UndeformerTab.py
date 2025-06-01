@@ -9,7 +9,7 @@ from non_planar_slicing_deformation.ui import Strings, GcodePlotHelper
 from non_planar_slicing_deformation.undeformer.Undeformer import Undeformer
 
 
-class UndeformerTab(QWidget):
+class UndeformerTab(QWidget):  # pylint: disable=duplicate-code
     """
     QWidget that draws the undeformer view
     """
