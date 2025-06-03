@@ -118,7 +118,7 @@ class SimpleUndeformer(Undeformer):
         max_z = 0
         for i, point in enumerate(gcode_points):
             if point["command"] == "G01":
-                max_z = np.max(max_z, new_positions[i, 2])
+                max_z = np.max(np.array([max_z, new_positions[i, 2]]))
         for i, point in enumerate(gcode_points):
             if point["command"] == "G00":
                 if new_positions[i, 2] > max_z:
