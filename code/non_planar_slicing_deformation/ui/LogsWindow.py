@@ -1,10 +1,14 @@
 from PySide6.QtCore import Slot, Qt
 from PySide6.QtWidgets import QWidget, QTextEdit, QVBoxLayout, QScrollArea
 
-from common.MainLoggerHolder import MAIN_LOGGER, MainLoggerHolder
+from non_planar_slicing_deformation.common.MainLoggerHolder import MainLoggerHolder
 
 
 class LogsWindow(QWidget):
+    """
+    Window that shows the logs, via a logging Signal
+    """
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -30,6 +34,6 @@ class LogsWindow(QWidget):
         MainLoggerHolder().qtObject.lineLogged.connect(self.onLineLogged)
 
     @Slot(str)
-    def onLineLogged(self, line: str) -> None:
+    def onLineLogged(self, line: str) -> None:  # pylint: disable=missing-function-docstring
         self.text += line + '\n'
         self.logsText.setText(self.text)

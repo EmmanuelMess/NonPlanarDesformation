@@ -11,7 +11,7 @@ from non_planar_slicing_deformation.ui.MainWindow import MainWindow
 from non_planar_slicing_deformation.ui.Mode import Mode
 from non_planar_slicing_deformation.ui.ModeSelectorWindow import ModeSelectorWindow
 from non_planar_slicing_deformation.undeformer.SimpleUndeformer import SimpleUndeformer
-from ui.LogsWindow import LogsWindow
+from non_planar_slicing_deformation.ui.LogsWindow import LogsWindow
 
 
 class MainApp(metaclass=Singleton):
@@ -45,12 +45,12 @@ class MainApp(metaclass=Singleton):
         sys.exit(self.app.exec())
 
     @Slot()
-    def onShowLogs(self) -> None:
+    def onShowLogs(self) -> None:  # pylint: disable=missing-function-docstring
         self.logsWindow = LogsWindow()
         self.logsWindow.show()
 
     @Slot(Mode)
-    def onAccepted(self, mode: Mode) -> None:
+    def onAccepted(self, mode: Mode) -> None:  # pylint: disable=missing-function-docstring
         self.mainWindow.setConfiguration(self._CONFIGURATION[mode])
 
         self.mainWindow.show()

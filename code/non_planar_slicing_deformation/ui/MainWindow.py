@@ -11,6 +11,9 @@ from non_planar_slicing_deformation.ui.UndeformerTab import UndeformerTab
 
 
 class MainWindow(QWidget):
+    """
+    The main window for the app, after user has selecetd the :class:`Mode`
+    """
 
     showLogs = Signal()
 

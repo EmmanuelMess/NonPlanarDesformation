@@ -7,7 +7,6 @@ from typing_extensions import List
 
 from non_planar_slicing_deformation.ui import Strings
 from non_planar_slicing_deformation.ui.Mode import Mode
-from ui.LogsWindow import LogsWindow
 
 
 class ModeSelectorWindow(QWidget):

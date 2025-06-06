@@ -1,11 +1,13 @@
 import logging
 import sys
 import traceback
+from types import TracebackType
 
 from PySide6.QtCore import Signal, QObject
+from typing_extensions import Type, Optional
 
-from common.QtLoggingHandler import QtLoggingHandler
-from common.Singleton import Singleton
+from non_planar_slicing_deformation.common.QtLoggingHandler import QtLoggingHandler
+from non_planar_slicing_deformation.common.Singleton import Singleton
 
 
 class MainLoggerHolder(metaclass=Singleton):
@@ -21,10 +23,9 @@ class MainLoggerHolder(metaclass=Singleton):
 
         lineLogged = Signal(str)
 
-
     qtObject = DummyQObject()
 
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
 
         sys.excepthook = self._onException
@@ -45,7 +46,8 @@ class MainLoggerHolder(metaclass=Singleton):
         qtHandler.lineLogged.connect(self.qtObject.lineLogged)
         self.logger.addHandler(qtHandler)
 
-    def _onException(self, etype, value, tb):
+    def _onException(self, etype: Type[BaseException], value: Optional[BaseException],
+                     tb: Optional[TracebackType]) -> None:
         self.logger.error(''.join(traceback.format_exception(etype, value, tb)))
 
 
