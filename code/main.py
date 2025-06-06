@@ -1,8 +1,7 @@
 import argparse
 
-from non_planar_slicing_deformation.common.MainLogger import MAIN_LOGGER
+from non_planar_slicing_deformation.common.MainLoggerHolder import MAIN_LOGGER
 from non_planar_slicing_deformation.ui.MainApp import MainApp
-
 
 def main() -> None:
     """

@@ -4,7 +4,7 @@ import numpy as np
 
 import pygcode as pg  # type: ignore
 
-from non_planar_slicing_deformation.common.MainLogger import MAIN_LOGGER
+from non_planar_slicing_deformation.common.MainLoggerHolder import MAIN_LOGGER
 from non_planar_slicing_deformation.configuration import Defaults
 from non_planar_slicing_deformation.configuration.CurrentDeformerState import CurrentDeformerState
 from non_planar_slicing_deformation.state.SimpleDeformerState import SimpleDeformerState

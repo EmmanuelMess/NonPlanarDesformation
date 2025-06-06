@@ -1,11 +1,13 @@
 from dataclasses import dataclass
 
 from PySide6.QtCore import Qt, Signal, Slot
-from PySide6.QtWidgets import QWidget, QVBoxLayout, QComboBox, QLabel, QPushButton
+from PySide6.QtGui import QIcon
+from PySide6.QtWidgets import QWidget, QVBoxLayout, QComboBox, QLabel, QPushButton, QHBoxLayout
 from typing_extensions import List
 
 from non_planar_slicing_deformation.ui import Strings
 from non_planar_slicing_deformation.ui.Mode import Mode
+from ui.LogsWindow import LogsWindow
 
 
 class ModeSelectorWindow(QWidget):
@@ -28,6 +30,7 @@ class ModeSelectorWindow(QWidget):
         # Item(Mode.THREE_D_PRINTER, Strings.threeAxis)
     ]
 
+    showLogs = Signal()
     accepted = Signal(Mode)
 
     def __init__(self) -> None:
@@ -35,8 +38,8 @@ class ModeSelectorWindow(QWidget):
 
         self.resize(250, 300)
 
-        self.rootLayout = QVBoxLayout(self)
-        self.rootLayout.setAlignment(Qt.AlignmentFlag.AlignVCenter)
+        self.centralLayout = QVBoxLayout()
+        self.centralLayout.setAlignment(Qt.AlignmentFlag.AlignVCenter)
 
         self.modeText = QLabel()
         self.modeText.setText(Strings.selectMode)
@@ -48,9 +51,22 @@ class ModeSelectorWindow(QWidget):
         self.acceptButton.setText(Strings.accept)
         self.acceptButton.pressed.connect(self.onPressedAccept)
 
-        self.rootLayout.addWidget(self.modeText)
-        self.rootLayout.addWidget(self.modeDropDown)
-        self.rootLayout.addWidget(self.acceptButton)
+        self.centralLayout.addWidget(self.modeText)
+        self.centralLayout.addWidget(self.modeDropDown)
+        self.centralLayout.addWidget(self.acceptButton)
+
+        self.headerLayout = QHBoxLayout()
+        self.headerLayout.setAlignment(Qt.AlignmentFlag.AlignRight)
+        self.logsButton = QPushButton()
+        self.logsButton.setIcon(QIcon.fromTheme(QIcon.ThemeIcon.InsertText))
+        self.logsButton.pressed.connect(self.showLogs)
+        self.headerLayout.addWidget(self.logsButton)
+
+        self.rootLayout = QVBoxLayout()
+        self.rootLayout.addLayout(self.headerLayout)
+        self.rootLayout.addLayout(self.centralLayout)
+
+        self.setLayout(self.rootLayout)
 
     @Slot()
     def onPressedAccept(self) -> None:

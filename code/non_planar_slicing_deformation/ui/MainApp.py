@@ -11,6 +11,7 @@ from non_planar_slicing_deformation.ui.MainWindow import MainWindow
 from non_planar_slicing_deformation.ui.Mode import Mode
 from non_planar_slicing_deformation.ui.ModeSelectorWindow import ModeSelectorWindow
 from non_planar_slicing_deformation.undeformer.SimpleUndeformer import SimpleUndeformer
+from ui.LogsWindow import LogsWindow
 
 
 class MainApp(metaclass=Singleton):
@@ -29,9 +30,11 @@ class MainApp(metaclass=Singleton):
         self.app = QtWidgets.QApplication([])
 
         self.selectorWindow = ModeSelectorWindow()
+        self.selectorWindow.showLogs.connect(self.onShowLogs)
         self.selectorWindow.accepted.connect(self.onAccepted)
 
         self.mainWindow = MainWindow()
+        self.mainWindow.showLogs.connect(self.onShowLogs)
 
     def run(self) -> None:
         """
@@ -40,6 +43,11 @@ class MainApp(metaclass=Singleton):
 
         self.selectorWindow.show()
         sys.exit(self.app.exec())
+
+    @Slot()
+    def onShowLogs(self) -> None:
+        self.logsWindow = LogsWindow()
+        self.logsWindow.show()
 
     @Slot(Mode)
     def onAccepted(self, mode: Mode) -> None:

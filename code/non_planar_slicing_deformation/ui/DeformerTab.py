@@ -5,7 +5,7 @@ from PySide6.QtWidgets import QWidget, QVBoxLayout, QFileDialog, QPushButton, QH
 from typing_extensions import Optional, cast
 
 from non_planar_slicing_deformation.common import Constants
-from non_planar_slicing_deformation.common.MainLogger import MAIN_LOGGER
+from non_planar_slicing_deformation.common.MainLoggerHolder import MAIN_LOGGER
 from non_planar_slicing_deformation.configuration.Configuration import Configuration
 from non_planar_slicing_deformation.deformer.Deformer import Deformer
 from non_planar_slicing_deformation.ui import Strings

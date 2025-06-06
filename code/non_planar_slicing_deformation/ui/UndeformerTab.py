@@ -3,7 +3,7 @@ from PySide6.QtCore import Qt, Slot
 from PySide6.QtWidgets import QWidget, QHBoxLayout, QVBoxLayout, QPushButton, QFileDialog
 from typing_extensions import Optional, List
 
-from non_planar_slicing_deformation.common.MainLogger import MAIN_LOGGER
+from non_planar_slicing_deformation.common.MainLoggerHolder import MAIN_LOGGER
 from non_planar_slicing_deformation.configuration.Configuration import Configuration
 from non_planar_slicing_deformation.ui import Strings, GcodePlotHelper
 from non_planar_slicing_deformation.undeformer.Undeformer import Undeformer

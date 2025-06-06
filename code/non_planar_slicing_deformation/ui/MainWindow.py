@@ -1,4 +1,5 @@
-from PySide6.QtCore import Slot, Qt
+from PySide6.QtCore import Slot, Qt, Signal
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QPushButton, QHBoxLayout
 from typing_extensions import Optional
 
@@ -11,6 +12,8 @@ from non_planar_slicing_deformation.ui.UndeformerTab import UndeformerTab
 
 class MainWindow(QWidget):
 
+    showLogs = Signal()
+
     def __init__(self) -> None:
         super().__init__()
 
@@ -22,7 +25,13 @@ class MainWindow(QWidget):
         self.rootLayout = QVBoxLayout(self)
 
         self.topButtonsLayout = QHBoxLayout(self)
-        self.topButtonsLayout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+
+        self.logsButton = QPushButton()
+        self.logsButton.setIcon(QIcon.fromTheme(QIcon.ThemeIcon.InsertText))
+        self.logsButton.pressed.connect(self.showLogs)
+
+        self.tabButtonsLayout = QHBoxLayout(self)
+        self.tabButtonsLayout.setAlignment(Qt.AlignmentFlag.AlignHCenter)
 
         self.settingsLayout = QVBoxLayout(self)
         self.settingsLayout.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -35,8 +44,13 @@ class MainWindow(QWidget):
         self.undeformerButton.setCheckable(True)
         self.undeformerButton.clicked.connect(self.onUndeformerShow)
 
-        self.topButtonsLayout.addWidget(self.deformerButton)
-        self.topButtonsLayout.addWidget(self.undeformerButton)
+        self.tabButtonsLayout.addWidget(self.deformerButton)
+        self.tabButtonsLayout.addWidget(self.undeformerButton)
+
+        self.topButtonsLayout.addStretch(1)
+        self.topButtonsLayout.addLayout(self.tabButtonsLayout)
+        self.topButtonsLayout.addStretch(1)
+        self.topButtonsLayout.addWidget(self.logsButton)
 
         self.deformerTab = DeformerTab(self)
         self.deformerTab.setVisible(False)
