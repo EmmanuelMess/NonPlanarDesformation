@@ -27,7 +27,7 @@ class ModeSelectorWindow(QWidget):
         Item(Mode.FOUR_AXIS_SIMPLE, Strings.fourAxisSimple),
         # Item(Mode.FOUR_S, Strings.fourS),
         # Item(Mode.THREE_D_PRINTER, Strings.threeAxis)
-    ]
+        ]
 
     showLogs = Signal()
     accepted = Signal(Mode)

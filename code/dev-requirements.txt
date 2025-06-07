@@ -3,3 +3,4 @@ flake8
 pylint>=2.16
 mypy
 pyinstaller
+autopep8

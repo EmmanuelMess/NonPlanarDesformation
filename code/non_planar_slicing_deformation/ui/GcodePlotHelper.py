@@ -9,12 +9,12 @@ from typing_extensions import Optional, List, Tuple
 G_COMMAND_3_AXIS_GCODE_REGEX = re.compile(
     r"(?:G1|G0)\s?(?:F[\-\d.]+)?\s?X(?P<x_coord>[\-\d.]+)\s?"
     r"Y(?P<y_coord>[\-\d.]+)\s?(Z(?P<z_coord>[\-\d.]+))?\s?(?:E[\-\d.]+)?"
-)
+    )
 
 G_COMMAND_4_AXIS_GCODE_REGEX = re.compile(
     r"(?:G01|G00)\s?C(?P<c_coord>[\-\d.]+)\s?X(?P<x_coord>[\-\d.]+)\s?Z(?P<z_coord>[\-\d.]+)\s?"
     r"B(?P<b_coord>[\-\d.]+)\s?(?:E[\-\d.]+)?\s?(?:F[\-\d.]+)?"
-)
+    )
 
 
 def plottable3AxisGcode(lines: List[str]) -> Optional[pv.PolyData]:

@@ -9,6 +9,9 @@ from non_planar_slicing_deformation.configuration import Defaults
 from non_planar_slicing_deformation.configuration.CurrentDeformerState import CurrentDeformerState
 from non_planar_slicing_deformation.state.SimpleDeformerState import SimpleDeformerState
 from non_planar_slicing_deformation.undeformer.Undeformer import Undeformer
+from non_planar_slicing_deformation.undeformer.gcode.FastMove import FastMove
+from non_planar_slicing_deformation.undeformer.gcode.MoveType import MoveType
+from non_planar_slicing_deformation.undeformer.gcode.SlowMove import SlowMove
 
 
 class SimpleUndeformer(Undeformer):
@@ -21,27 +24,17 @@ class SimpleUndeformer(Undeformer):
 
         self.state: Optional[SimpleDeformerState] = None
 
-    @override
-    def undeformImplementation(self, gcode: List[str]) -> Optional[List[str]]:  # noqa: C901
-        if CurrentDeformerState().getState() is None:
-            MAIN_LOGGER.error("Missing state, did you forget to call CurrentDeformerState.setState?")
-            return None
-
-        state = cast(SimpleDeformerState, CurrentDeformerState().getState())
-
-        # TODO split this into functions
-
-        # read gcode
+    def _readGcode(self, state: SimpleDeformerState, gcode: List[str]) -> List[MoveType]:  # noqa: C901
         pos = np.array([0., 0., 20.])
-        feed = 0
-        gcode_points = []
+        feed = 0.0
+        gcode_points: List[MoveType] = []
 
         for gcodeLine in map(pg.Line, gcode):
             if not gcodeLine.block.gcodes:
                 continue
 
-            extrusion = None
             nextGcodeBlock = None
+            prev_pos = np.array([0, 0, 0], dtype=np.float64)
 
             # extract position and feedrate
             for gcodeBlock in sorted(gcodeLine.block.gcodes):
@@ -57,11 +50,12 @@ class SimpleUndeformer(Undeformer):
                         pos[2] = gcodeBlock.Z
 
                 if gcodeBlock.word.letter == "F":
-                    feed = gcodeBlock.word.value
+                    feed = float(gcodeBlock.word.value)
 
             if nextGcodeBlock is None:
                 continue
 
+            extrusion = None
             # extract extrusion
             for param in gcodeLine.block.modal_params:
                 if param.letter == "E":
@@ -71,7 +65,7 @@ class SimpleUndeformer(Undeformer):
             # prevents G0 (rapid moves) from hitting the part
             # makes G1 (feed moves) less jittery
             delta_pos = pos - prev_pos
-            distance = np.linalg.norm(delta_pos)
+            distance: float = cast(float, np.linalg.norm(delta_pos))
             if distance > 0 and nextGcodeBlock.word == "G01":
                 seg_size = 1  # mm
                 num_segments = -(-distance // seg_size)  # hacky round up
@@ -85,59 +79,74 @@ class SimpleUndeformer(Undeformer):
                     inv_time_feed = 1 / time_to_complete_move  # 1/min
 
                 for i in range(int(num_segments)):
-                    gcode_points.append({
-                        "position": (prev_pos + delta_pos * (i + 1) / num_segments) + state.offsetsApplied,
-                        "command": nextGcodeBlock.word,
-                        "extrusion": extrusion / num_segments if extrusion is not None else None,
-                        "inv_time_feed": inv_time_feed,
-                        "move_length": seg_distance,
-                        "start_position": prev_pos,
-                        "end_position": pos,
-                        "unsegmented_move_length": distance
-                    })
+                    gcode_points.append(SlowMove(
+                        position=(prev_pos + delta_pos * (i + 1) / num_segments) + state.offsetsApplied,
+                        command=nextGcodeBlock.word,
+                        extrusion=extrusion / num_segments if extrusion is not None else None,
+                        inverseTimeFeed=inv_time_feed,
+                        moveLength=seg_distance,
+                        startPosition=prev_pos,
+                        endPosition=pos,
+                        unsegmentedMoveLength=distance
+                        ))
             else:
-                gcode_points.append({
-                    "position": pos.copy() + state.offsetsApplied,
-                    "command": nextGcodeBlock.word,
-                    "extrusion": extrusion,
-                    "inv_time_feed": None,
-                    "move_length": 0
-                })
+                gcode_points.append(FastMove(
+                    position=pos.copy() + state.offsetsApplied,
+                    command=nextGcodeBlock.word,
+                    extrusion=extrusion,
+                    inverseTimeFeed=None,
+                    moveLength=0
+                    ))
+
+        return gcode_points
+
+    @override
+    def undeformImplementation(self, gcode: List[str]) -> Optional[List[str]]:  # noqa: C901
+        if CurrentDeformerState().getState() is None:
+            MAIN_LOGGER.error("Missing state, did you forget to call CurrentDeformerState.setState?")
+            return None
+
+        state = cast(SimpleDeformerState, CurrentDeformerState().getState())
+
+        # TODO split this into functions
+
+        # read gcode
+        gcode_points = self._readGcode(state, gcode)
 
         # untransform gcode
-        positions = np.array([point["position"] for point in gcode_points], dtype=np.float64)
+        positions = np.array([point.position for point in gcode_points], dtype=np.float64)
         distances_to_center = np.linalg.norm(positions[:, :2], axis=1)
         translate_upwards = np.hstack([
             np.zeros((len(positions), 2)),
             np.tan(state.rotation(distances_to_center).reshape(-1, 1)) * distances_to_center.reshape(-1, 1)
-        ], dtype=np.float64)
+            ], dtype=np.float64)
 
         new_positions = positions - translate_upwards
 
         # cap travel move height to be just above the part and to not travel over the origin
         max_z = 0
         for i, point in enumerate(gcode_points):
-            if point["command"] == "G01":
+            if point.command == "G01":
                 max_z = np.max(np.array([max_z, new_positions[i, 2]]))
         for i, point in enumerate(gcode_points):
-            if point["command"] == "G00":
+            if point.command == "G00":
                 if new_positions[i, 2] > max_z:
                     new_positions[i] = None
 
         # rescale extrusion by change in move_length
         prev_pos = np.array([0., 0., 0.])
         for i, point in enumerate(gcode_points):
-            if point["extrusion"] is not None and point["move_length"] != 0:
-                extrusion_scale = np.linalg.norm(new_positions[i] - prev_pos) / point["move_length"]
-                point["extrusion"] *= min(extrusion_scale, 10)
+            if point.extrusion is not None and point.moveLength != 0:
+                extrusion_scale = cast(float, np.linalg.norm(new_positions[i] - prev_pos) / point.moveLength)
+                point.extrusion *= min(extrusion_scale, 10.0)
             prev_pos = new_positions[i]
 
         # rescale extrusion to compensate for rotation deformation
         distances_to_center = np.linalg.norm(new_positions[:, :2], axis=1)
         extrusion_scales = np.cos(state.rotation(distances_to_center))
         for i, point in enumerate(gcode_points):
-            if point["extrusion"] is not None:
-                point["extrusion"] *= extrusion_scales[i]
+            if point.extrusion is not None:
+                point.extrusion *= extrusion_scales[i]
 
         NOZZLE_OFFSET = np.float64(43)  # mm
 
@@ -191,15 +200,15 @@ class SimpleUndeformer(Undeformer):
 
             theta_accum += delta_theta
 
-            string = f"{point['command']} C{np.rad2deg(theta_accum):.5f} X{r:.5f} Z{z:.5f} B{-np.rad2deg(rotation):.5f}"
+            string = f"{point.command} C{np.rad2deg(theta_accum):.5f} X{r:.5f} Z{z:.5f} B{-np.rad2deg(rotation):.5f}"
             # If you want to print on another type of 4 axis printer, you will need to change previous code
 
-            if point["extrusion"] is not None:
-                string += f" E{point['extrusion']:.4f}"
+            if point.extrusion is not None:
+                string += f" E{point.extrusion:.4f}"
 
             no_feed_value = False
-            if point["inv_time_feed"] is not None:
-                string += f" F{(point['inv_time_feed']):.4f}"
+            if point.inverseTimeFeed is not None:
+                string += f" F{point.inverseTimeFeed:.4f}"
             else:
                 string += " F50000"
                 outputLines.append("G94")

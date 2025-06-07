@@ -23,7 +23,7 @@ class MainApp(metaclass=Singleton):
         Mode.FOUR_AXIS_SIMPLE: Configuration(deformer=SimpleDeformer, undeformer=SimpleUndeformer),
         # Mode.FOUR_S: None,
         # Mode.THREE_D_PRINTER: None,
-    }
+        }
 
     def __init__(self) -> None:
         super().__init__()
